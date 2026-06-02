@@ -18,6 +18,7 @@ import { useAuth } from "@/lib/auth";
 export function SiteHeader() {
   const [searchQuery, setSearchQuery] = useState("");
   const [isOpen, setIsOpen] = useState(false);
+  const { user, loading, signOut, isAdmin } = useAuth();
 
   return (
     <header className="sticky top-0 z-50 w-full bg-white/95 backdrop-blur border-b border-border">
