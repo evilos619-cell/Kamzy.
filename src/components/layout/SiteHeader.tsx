@@ -52,23 +52,69 @@ export function SiteHeader() {
             </div>
 
             <div className="flex items-center gap-2 sm:gap-3">
-              <Link
-                to="/contact"
-                className="hidden sm:inline-flex items-center gap-2 text-brand-navy hover:text-brand-orange transition-colors font-medium text-sm"
-              >
-                <User className="w-4 h-4" />
-                Login
-              </Link>
-              <Button
-                asChild
-                className="bg-brand-orange hover:bg-brand-orange-hover text-white shadow-sm"
-              >
-                <Link to="/contact" className="flex items-center gap-2">
-                  <UserPlus className="w-4 h-4" />
-                  <span className="hidden xs:inline">Register</span>
-                  <span className="xs:hidden">Join</span>
-                </Link>
-              </Button>
+              {loading ? (
+                <div className="h-9 w-24 rounded-md bg-muted animate-pulse" />
+              ) : user ? (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="outline" className="gap-2 border-brand-navy/20">
+                      <User className="w-4 h-4" />
+                      <span className="hidden sm:inline max-w-[120px] truncate">
+                        {user.email}
+                      </span>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end" className="w-56">
+                    <DropdownMenuLabel className="truncate">{user.email}</DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem asChild>
+                      <Link to="/dashboard" className="cursor-pointer">
+                        <LayoutDashboard className="w-4 h-4 mr-2" /> Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to="/wallet" className="cursor-pointer">
+                        <Wallet className="w-4 h-4 mr-2" /> Wallet
+                      </Link>
+                    </DropdownMenuItem>
+                    {isAdmin && (
+                      <DropdownMenuItem asChild>
+                        <Link to="/admin" className="cursor-pointer">
+                          <LayoutGrid className="w-4 h-4 mr-2" /> Admin
+                        </Link>
+                      </DropdownMenuItem>
+                    )}
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      onClick={() => signOut()}
+                      className="cursor-pointer text-destructive focus:text-destructive"
+                    >
+                      <LogOut className="w-4 h-4 mr-2" /> Sign out
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              ) : (
+                <>
+                  <Link
+                    to="/auth"
+                    search={{ mode: "login" }}
+                    className="hidden sm:inline-flex items-center gap-2 text-brand-navy hover:text-brand-orange transition-colors font-medium text-sm"
+                  >
+                    <User className="w-4 h-4" />
+                    Login
+                  </Link>
+                  <Button
+                    asChild
+                    className="bg-brand-orange hover:bg-brand-orange-hover text-white shadow-sm"
+                  >
+                    <Link to="/auth" search={{ mode: "signup" }} className="flex items-center gap-2">
+                      <UserPlus className="w-4 h-4" />
+                      <span className="hidden xs:inline">Register</span>
+                      <span className="xs:hidden">Join</span>
+                    </Link>
+                  </Button>
+                </>
+              )}
             </div>
           </div>
         </div>
