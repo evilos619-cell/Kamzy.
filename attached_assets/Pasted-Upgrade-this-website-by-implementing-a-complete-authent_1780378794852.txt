@@ -1,0 +1,223 @@
+Upgrade this website by implementing a complete authentication system, admin dashboard, wallet system, payment system, support/community links, and e-commerce functionality while preserving the current design, layout, branding, colors, pages, responsiveness, and user experience exactly as they are.
+
+Reference Project
+
+Analyze and replicate the authentication, role management, admin dashboard, payment flow, wallet functionality, permissions, and access-control logic used in:
+
+https://github.com/sammylogs619-a11y/sammystorelogs.git
+
+Do not copy the design from the reference project.
+
+Only replicate its functionality, business logic, database structure, workflows, permissions, wallet system, payment system, and user/admin experience while keeping this website's existing design unchanged.
+
+---
+
+Authentication
+
+- User Registration
+- User Login
+- Google Sign-In (Supabase OAuth)
+- Password Reset
+- Secure Session Management
+- Protected Routes
+- Persistent Login Sessions
+- Role-Based Access Control
+
+Fix all OAuth, redirect, callback, and session issues.
+
+---
+
+Roles
+
+Only two roles exist:
+
+- User
+- Admin
+
+No Super Admin role must exist.
+
+---
+
+Default Admin Account
+
+Email:
+1sammystore1@gmail.com
+
+First Login Admin Setup
+
+- The first login of this email must trigger secure password creation.
+- That password becomes the permanent admin password.
+- Password can later be changed inside Admin Settings.
+- Do NOT hardcode any password.
+- Only this email can ever become admin.
+
+---
+
+Wallet System
+
+- Auto-create wallet on user registration
+- Wallet balance tracking
+- Wallet transaction history
+- Credit & debit logs
+- Real-time wallet updates
+
+---
+
+Wallet Funding
+
+Integrate:
+
+- Paystack
+- NOWPayments
+
+Rules:
+
+- User selects amount
+- User selects payment method
+- Payment is verified automatically
+- Wallet is credited instantly after verification
+- Prevent duplicate webhook credits
+- Store transaction metadata
+
+---
+
+Product System
+
+- Admin creates and manages products
+- Users browse products
+- Users purchase products using wallet balance
+
+Purchase rules:
+
+- Check wallet balance before purchase
+- Auto-deduct wallet after purchase
+- Create order record
+- Update sales analytics
+- Prevent insufficient balance purchases
+
+---
+
+Support & Community Links
+
+Add globally accessible support links:
+
+- WhatsApp: +234 816 313 7129
+- Telegram: https://t.me/Sammy_store_logs
+- WhatsApp Community: https://chat.whatsapp.com/Jjf0FDLFmxMEDEV9Hjo1Yt
+- Telegram Channel: https://t.me/sammystorelogss
+
+Add to:
+
+- Footer
+- Help section
+- User dashboard
+
+---
+
+Admin Dashboard
+
+- User management
+- Product management
+- Wallet management
+- Payment management
+- Orders
+- Analytics
+- Settings
+
+---
+
+Database (Supabase)
+
+Create:
+
+- Tables
+- Relationships
+- Triggers
+- RLS policies
+- Storage buckets
+
+Store:
+
+- Users
+- Roles
+- Wallets
+- Transactions
+- Products
+- Orders
+- Payments
+
+---
+
+Security
+
+- Role-based access control
+- Secure API routes
+- Webhook verification
+- Input validation
+- Rate limiting
+
+Users can only access their own data.
+
+Admins access full system.
+
+---
+
+Deployment: Render + GitHub Auto Sync
+
+Render Setup Requirements
+
+- Project must be fully compatible with Render deployment
+- Must build successfully using standard Vite build ("npm run build")
+- Must run as a static frontend or Node server depending on configuration
+- Ensure environment variables are configurable in Render dashboard
+- Ensure no Nitro, Wrangler, or SSR adapters are included
+
+GitHub Auto-Sync Requirement
+
+- All code changes must automatically push to the main GitHub repository
+- Repository must remain the single source of truth
+- Render must be connected to GitHub for automatic deployments
+- Every commit to "main" branch must trigger automatic Render redeployment
+- Ensure CI/CD flow is enabled:
+  - Local changes → GitHub push → Render auto deploy
+
+Build Output
+
+- Must generate clean production build
+- No SSR dependencies
+- No server-only runtime blockers
+
+---
+
+UI RULES
+
+Do not redesign the website.
+
+Keep:
+
+- Layout
+- Colors
+- Branding
+- Pages
+- Navigation
+- Styling
+
+Only add functionality.
+
+---
+
+FINAL GOAL
+
+Turn this into a production-ready e-commerce system with:
+
+- Authentication (Google + Email)
+- Admin system
+- Wallet system
+- Paystack + NOWPayments
+- Product purchase system
+- Order system
+- Supabase backend
+- Secure role management
+- Auto deployment via GitHub + Render
+
+while preserving the current UI exactly.
