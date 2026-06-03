@@ -677,7 +677,7 @@ function SettingsTab() {
     setSaving(true);
     let parsed: unknown;
     try { parsed = JSON.parse(newVal); } catch { parsed = newVal; }
-    const { error } = await supabase.from("site_settings").upsert({ key: newKey.trim(), value: parsed, updated_at: new Date().toISOString() });
+    const { error } = await supabase.from("site_settings").upsert({ key: newKey.trim(), value: parsed as never, updated_at: new Date().toISOString() });
     setSaving(false);
     if (error) { toast.error(error.message); return; }
     toast.success("Setting saved!");
