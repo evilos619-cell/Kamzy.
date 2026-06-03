@@ -190,6 +190,54 @@ export type Database = {
         }
         Relationships: []
       }
+      product_credentials: {
+        Row: {
+          assigned_to: string | null
+          content: string
+          created_at: string
+          delivered_at: string | null
+          id: string
+          label: string | null
+          order_id: string | null
+          product_id: string
+        }
+        Insert: {
+          assigned_to?: string | null
+          content: string
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          label?: string | null
+          order_id?: string | null
+          product_id: string
+        }
+        Update: {
+          assigned_to?: string | null
+          content?: string
+          created_at?: string
+          delivered_at?: string | null
+          id?: string
+          label?: string | null
+          order_id?: string | null
+          product_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "product_credentials_order_id_fkey"
+            columns: ["order_id"]
+            isOneToOne: false
+            referencedRelation: "orders"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "product_credentials_product_id_fkey"
+            columns: ["product_id"]
+            isOneToOne: false
+            referencedRelation: "products"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       products: {
         Row: {
           category_id: string | null
@@ -400,6 +448,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      assign_credential_to_order: {
+        Args: { _order_id: string; _product_id: string }
+        Returns: string
+      }
       credit_wallet: {
         Args: {
           _amount: number
