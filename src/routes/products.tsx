@@ -288,9 +288,18 @@ export default function ProductsPage() {
                 <span className="font-medium text-brand-navy">₦{Math.max(0, (walletBalance ?? 0) - buyTarget.price).toLocaleString()}</span>
               </div>
               {(walletBalance ?? 0) < buyTarget.price && (
-                <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg">
-                  Insufficient balance.{" "}
-                  <Link to="/wallet" className="underline font-medium">Fund your wallet →</Link>
+                <div className="bg-red-50 text-red-600 text-sm p-3 rounded-lg flex items-center justify-between gap-2 flex-wrap">
+                  <span>Insufficient balance.</span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setTopUpAmount(Math.max(100, Math.ceil((buyTarget.price - (walletBalance ?? 0)) / 100) * 100));
+                      setTopUpOpen(true);
+                    }}
+                    className="underline font-medium hover:text-red-700"
+                  >
+                    Fund wallet now →
+                  </button>
                 </div>
               )}
             </div>
