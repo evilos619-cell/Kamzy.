@@ -40,10 +40,15 @@ export default function WalletPage() {
     if (!user) return;
     setDataLoading(true);
     const [w, t] = await Promise.all([
-      supabase.from("wallets").select("*").eq("user_id", user.id).single(),
+      supabase.from("wallets").select("*").eq("user_id", user.id).maybeSingle(),
       supabase.from("wallet_transactions").select("*").eq("user_id", user.id).order("created_at", { ascending: false }).limit(50),
     ]);
-    setWallet(w.data as WalletRow | null);
+    let walletRow = w.data as WalletRow | null;
+    if (!walletRow) {
+      const { data: created } = await supabase.from("wallets").insert({ user_id: user.id }).select("*").maybeSingle();
+      walletRow = (created as WalletRow | null) ?? null;
+    }
+    setWallet(walletRow);
     setTransactions((t.data as Tx[]) ?? []);
     setDataLoading(false);
   };
