@@ -12,8 +12,9 @@ app.use(cors());
 app.use(express.json());
 
 // ─── Config ───────────────────────────────────────────────────────────────────
+// Prefer VITE_SUPABASE_URL (the active project) over the legacy SUPABASE_URL
 const SUPABASE_URL =
-  process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "";
+  process.env.VITE_SUPABASE_URL ?? process.env.SUPABASE_URL ?? "";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
 const PAYSTACK_SECRET_KEY  = process.env.PAYSTACK_SECRET_KEY ?? "";
 const NOWPAYMENTS_API_KEY  = process.env.NOWPAYMENTS_API_KEY ?? "";

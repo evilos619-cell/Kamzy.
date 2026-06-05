@@ -53,16 +53,23 @@ async function ensureWallet(userId: string): Promise<WalletRow | null> {
     }
   }
 
-  // Fallback: try directly via supabase client
+  // Fallback 1: try selecting/inserting directly (works if wallets_self_insert policy is set)
   try {
-    const { data: existing } = await supabase.from("wallets").select("*").eq("user_id", userId).maybeSingle();
+    const { data: existing } = await supabase.from("wallets").select("id,balance,currency,updated_at").eq("user_id", userId).maybeSingle();
     if (existing) return existing as WalletRow;
 
-    const { data: created } = await supabase.from("wallets").insert({ user_id: userId, balance: 0, currency: "NGN" }).select("*").maybeSingle();
-    return (created as WalletRow | null) ?? null;
-  } catch {
-    return null;
-  }
+    const { data: created } = await supabase.from("wallets").insert({ user_id: userId, balance: 0, currency: "NGN" }).select("id,balance,currency,updated_at").maybeSingle();
+    if (created) return created as WalletRow;
+  } catch { /* fall through */ }
+
+  // Fallback 2: SECURITY DEFINER RPC (works even without INSERT policy)
+  try {
+    const { data: rows } = await supabase.rpc("ensure_user_wallet" as never);
+    const row = Array.isArray(rows) ? rows[0] : rows;
+    if (row) return row as WalletRow;
+  } catch { /* give up */ }
+
+  return null;
 }
 
 export default function WalletPage() {
