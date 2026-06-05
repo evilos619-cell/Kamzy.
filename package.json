@@ -6,8 +6,9 @@
   "scripts": {
     "dev": "concurrently \"vite\" \"tsx server/api.ts\" --kill-others-on-fail",
     "build": "vite build",
-    "start": "node dist/server/server.js",
-    "preview": "vite preview --port 5000 --host 0.0.0.0",
+    "start": "node --loader tsx/esm server/api.ts",
+    "start:prod": "NODE_ENV=production tsx server/api.ts",
+    "preview": "concurrently \"vite preview --port 5000 --host 0.0.0.0\" \"tsx server/api.ts\" --kill-others-on-fail",
     "lint": "eslint .",
     "format": "prettier --write ."
   },

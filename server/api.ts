@@ -1,17 +1,25 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+import { fileURLToPath } from "url";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const IS_PROD = process.env.NODE_ENV === "production";
 
 const app = express();
 app.use(cors());
 app.use(express.json());
 
+// ─── Config ───────────────────────────────────────────────────────────────────
 const SUPABASE_URL =
   process.env.SUPABASE_URL ?? process.env.VITE_SUPABASE_URL ?? "";
 const SUPABASE_SERVICE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY ?? "";
-const PAYSTACK_SECRET_KEY = process.env.PAYSTACK_SECRET_KEY ?? "";
-const NOWPAYMENTS_API_KEY = process.env.NOWPAYMENTS_API_KEY ?? "";
+const PAYSTACK_SECRET_KEY  = process.env.PAYSTACK_SECRET_KEY ?? "";
+const NOWPAYMENTS_API_KEY  = process.env.NOWPAYMENTS_API_KEY ?? "";
+const ADMIN_EMAIL          = process.env.ADMIN_EMAIL ?? "";
 
+// ─── Supabase admin client ─────────────────────────────────────────────────
 let supabaseAdmin: SupabaseClient | null = null;
 
 if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
@@ -24,11 +32,47 @@ if (SUPABASE_URL && SUPABASE_SERVICE_KEY) {
     console.error("[API] Failed to initialize Supabase client:", e);
   }
 } else {
-  console.warn(
-    "[API] ⚠️  SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY not set — auth-dependent routes will return 503"
-  );
+  console.warn("[API] ⚠️  SUPABASE_URL and/or SUPABASE_SERVICE_ROLE_KEY not set — auth-dependent routes will return 503");
 }
 
+// ─── Admin auto-seeding ────────────────────────────────────────────────────
+async function seedAdmin() {
+  if (!supabaseAdmin || !ADMIN_EMAIL) return;
+  try {
+    // Find the user by email
+    const { data: users, error: listErr } = await supabaseAdmin.auth.admin.listUsers();
+    if (listErr || !users) return;
+    const adminUser = users.users.find((u) => u.email === ADMIN_EMAIL);
+    if (!adminUser) {
+      console.log(`[API] Admin seed: user ${ADMIN_EMAIL} not found in auth — they must sign up first`);
+      return;
+    }
+    // Check if role already exists
+    const { data: existing } = await supabaseAdmin
+      .from("user_roles")
+      .select("id")
+      .eq("user_id", adminUser.id)
+      .eq("role", "admin")
+      .limit(1);
+    if (existing && existing.length > 0) {
+      console.log(`[API] Admin seed: ${ADMIN_EMAIL} already has admin role ✓`);
+      return;
+    }
+    // Insert admin role
+    const { error: insertErr } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: adminUser.id, role: "admin" });
+    if (insertErr) {
+      console.error("[API] Admin seed: failed to insert role —", insertErr.message);
+    } else {
+      console.log(`[API] ✅ Admin role granted to ${ADMIN_EMAIL}`);
+    }
+  } catch (e) {
+    console.error("[API] Admin seed error:", e);
+  }
+}
+
+// ─── Helpers ──────────────────────────────────────────────────────────────
 function requireSupabase(res: express.Response): supabaseAdmin is SupabaseClient {
   if (!supabaseAdmin) {
     res.status(503).json({ error: "Service temporarily unavailable — Supabase not configured. Add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to Replit Secrets." });
@@ -51,12 +95,14 @@ function err(res: express.Response, status: number, msg: string) {
   return res.status(status).json({ error: msg });
 }
 
+// ─── Routes ───────────────────────────────────────────────────────────────
 app.get("/api/health", (_req, res) => {
   res.json({
     ok: true,
     supabase: !!supabaseAdmin,
     paystack: !!PAYSTACK_SECRET_KEY,
     nowpayments: !!NOWPAYMENTS_API_KEY,
+    adminEmail: ADMIN_EMAIL || null,
   });
 });
 
@@ -139,7 +185,7 @@ app.post("/api/payment/nowpayments-invoice", async (req, res) => {
 
   const siteUrl =
     process.env.VITE_SITE_URL ??
-    (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "https://your-app.replit.app");
+    (process.env.REPLIT_DEV_DOMAIN ? `https://${process.env.REPLIT_DEV_DOMAIN}` : "https://mmystorelogs.com");
 
   let nowRes: Response;
   try {
@@ -326,10 +372,27 @@ app.post("/api/wallet/ensure", async (req, res) => {
   return res.json({ wallet: created });
 });
 
-const PORT = parseInt(process.env.API_PORT ?? "3001", 10);
-app.listen(PORT, "0.0.0.0", () => {
-  console.log(`[API] Server running on port ${PORT}`);
+// ─── Static file serving (production) ─────────────────────────────────────
+if (IS_PROD) {
+  const distPath = path.resolve(__dirname, "../dist");
+  app.use(express.static(distPath));
+  // For any non-API route, serve index.html (SPA fallback)
+  app.get(/^(?!\/api).*/, (_req, res) => {
+    res.sendFile(path.join(distPath, "index.html"));
+  });
+  console.log(`[API] Serving static files from ${distPath}`);
+}
+
+// ─── Start ─────────────────────────────────────────────────────────────────
+const PORT = parseInt(process.env.PORT ?? process.env.API_PORT ?? (IS_PROD ? "5000" : "3001"), 10);
+app.listen(PORT, "0.0.0.0", async () => {
+  console.log(`[API] Server running on port ${PORT} (${IS_PROD ? "production" : "development"})`);
   if (!SUPABASE_URL || !SUPABASE_SERVICE_KEY) console.warn("[API] ⚠️  Supabase not configured — add SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY to Replit Secrets");
-  if (!PAYSTACK_SECRET_KEY) console.warn("[API] ⚠️  PAYSTACK_SECRET_KEY not set — Paystack payments will fail");
-  if (!NOWPAYMENTS_API_KEY) console.warn("[API] ⚠️  NOWPAYMENTS_API_KEY not set — crypto payments will fail");
+  if (!PAYSTACK_SECRET_KEY)  console.warn("[API] ⚠️  PAYSTACK_SECRET_KEY not set");
+  if (!NOWPAYMENTS_API_KEY)  console.warn("[API] ⚠️  NOWPAYMENTS_API_KEY not set");
+  if (ADMIN_EMAIL) {
+    await seedAdmin();
+  } else {
+    console.log("[API] ℹ️  ADMIN_EMAIL not set — skipping admin seed. Add it to Replit Secrets to auto-grant admin.");
+  }
 });
