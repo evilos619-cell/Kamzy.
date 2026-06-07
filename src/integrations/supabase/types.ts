@@ -608,7 +608,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["user", "admin"],
-      order_status: ["pending", "completed", "failed", "refunded"],
+      order_status: ["pending", "completed", "pending_credentials", "failed", "refunded"],
       payment_provider: ["paystack", "nowpayments", "manual"],
       tx_status: ["pending", "success", "failed", "reversed"],
       tx_type: ["credit", "debit"],

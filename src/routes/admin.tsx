@@ -768,6 +768,18 @@ function ProductsTab() {
                   className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm resize-none h-20 focus:outline-none focus:ring-2 focus:ring-brand-orange/30" placeholder="Optional description…" />
               </div>
               <div className="col-span-2">
+                <Label>Image URL</Label>
+                <Input
+                  value={form.image_url ?? ""}
+                  onChange={(e) => setForm({ ...form, image_url: e.target.value })}
+                  className="mt-1"
+                  placeholder="https://example.com/image.jpg"
+                />
+                <p className="text-xs text-muted-foreground mt-2">
+                  Paste a direct image link or upload an image below. Uploaded files take priority.
+                </p>
+              </div>
+              <div className="col-span-2">
                 <Label>Product Image</Label>
                 <ImageUploader value={form.image_url ?? null} onChange={(url) => setForm({ ...form, image_url: url ?? "" })} />
               </div>
@@ -807,10 +819,13 @@ function ProductsTab() {
 }
 
 // ─── Orders Tab ───────────────────────────────────────────────────────────────
-const ORDER_STATUS = ["pending", "completed", "failed", "refunded"];
+const ORDER_STATUS = ["pending", "completed", "pending_credentials", "failed", "refunded"];
 const STATUS_COLORS: Record<string, string> = {
-  completed: "bg-green-100 text-green-700", pending: "bg-yellow-100 text-yellow-700",
-  failed: "bg-red-100 text-red-700",        refunded: "bg-blue-100 text-blue-700",
+  completed: "bg-green-100 text-green-700",
+  pending: "bg-yellow-100 text-yellow-700",
+  pending_credentials: "bg-orange-100 text-orange-700",
+  failed: "bg-red-100 text-red-700",
+  refunded: "bg-blue-100 text-blue-700",
 };
 
 function OrdersTab() {
@@ -834,7 +849,7 @@ function OrdersTab() {
   useEffect(() => { fetchOrders(); }, []);
 
   const updateStatus = async (id: string, status: string) => {
-    const { error } = await supabase.from("orders").update({ status: status as "completed" | "failed" | "pending" | "refunded" }).eq("id", id);
+    const { error } = await supabase.from("orders").update({ status: status as "completed" | "failed" | "pending" | "refunded" | "pending_credentials" }).eq("id", id);
     if (error) toast.error(error.message); else { toast.success("Order updated"); fetchOrders(); }
   };
 

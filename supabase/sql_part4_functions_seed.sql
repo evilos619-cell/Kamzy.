@@ -72,6 +72,7 @@ DECLARE
   v_new_balance numeric(14,2);
   v_tx_id       uuid;
   v_order_id    uuid;
+  v_cred_id     uuid;
 BEGIN
   IF _quantity <= 0 THEN RAISE EXCEPTION 'quantity must be positive'; END IF;
   SELECT * INTO v_product FROM public.products WHERE id = _product_id AND published = true FOR UPDATE;
@@ -90,7 +91,12 @@ BEGIN
     VALUES (_user_id,v_total,v_product.currency,'completed',v_tx_id) RETURNING id INTO v_order_id;
   INSERT INTO public.order_items(order_id,product_id,title,unit_price,quantity)
     VALUES (v_order_id,v_product.id,v_product.title,v_product.price,_quantity);
-  PERFORM public.assign_credential_to_order(v_order_id, _product_id);
+  v_cred_id := public.assign_credential_to_order(v_order_id, _product_id);
+  IF v_cred_id IS NULL THEN
+    UPDATE public.orders SET status = 'pending_credentials' WHERE id = v_order_id;
+    INSERT INTO public.activity_logs(actor_id, action, target, metadata)
+      VALUES (_user_id, 'pending_credentials', _product_id::text, json_build_object('order_id', v_order_id));
+  END IF;
   RETURN v_order_id;
 END;
 $$;
@@ -108,6 +114,7 @@ BEGIN
   IF v_cred_id IS NULL THEN RETURN NULL; END IF;
   UPDATE public.product_credentials SET order_id=_order_id, assigned_to=v_user_id, delivered_at=now() WHERE id=v_cred_id;
   UPDATE public.order_items SET delivered_payload=v_cred_id::text WHERE order_id=_order_id AND product_id=_product_id;
+  UPDATE public.orders SET status = 'completed' WHERE id = _order_id AND status = 'pending_credentials';
   RETURN v_cred_id;
 END;
 $$;

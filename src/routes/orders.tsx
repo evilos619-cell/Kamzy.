@@ -45,10 +45,11 @@ function parseCredential(content: string) {
 }
 
 const STATUS_META: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
-  completed: { label: "Completed",  color: "bg-green-100 text-green-700",  icon: <CheckCircle className="w-3.5 h-3.5" /> },
-  pending:   { label: "Pending",    color: "bg-yellow-100 text-yellow-700", icon: <Clock className="w-3.5 h-3.5" /> },
-  failed:    { label: "Failed",     color: "bg-red-100 text-red-600",      icon: <XCircle className="w-3.5 h-3.5" /> },
-  refunded:  { label: "Refunded",   color: "bg-blue-100 text-blue-700",    icon: <RefreshCw className="w-3.5 h-3.5" /> },
+  completed:          { label: "Completed",            color: "bg-green-100 text-green-700",  icon: <CheckCircle className="w-3.5 h-3.5" /> },
+  pending:            { label: "Pending",              color: "bg-yellow-100 text-yellow-700", icon: <Clock className="w-3.5 h-3.5" /> },
+  pending_credentials: { label: "Pending credentials", color: "bg-orange-100 text-orange-700", icon: <AlertCircle className="w-3.5 h-3.5" /> },
+  failed:             { label: "Failed",               color: "bg-red-100 text-red-600",      icon: <XCircle className="w-3.5 h-3.5" /> },
+  refunded:           { label: "Refunded",             color: "bg-blue-100 text-blue-700",    icon: <RefreshCw className="w-3.5 h-3.5" /> },
 };
 
 export default function OrdersPage() {
@@ -126,7 +127,7 @@ export default function OrdersPage() {
 
     const pendingAssignments = enriched.flatMap((order) =>
       order.items
-        .filter((item) => order.status === "completed" && !item.credential && item.product_id)
+        .filter((item) => (order.status === "completed" || order.status === "pending_credentials") && !item.credential && item.product_id)
         .map((item) => ({ orderId: order.id, productId: item.product_id }))
     );
 
@@ -331,6 +332,13 @@ export default function OrdersPage() {
                                     </span>
                                   )}
                                 </div>
+                              </div>
+                            ) : order.status === "pending_credentials" ? (
+                              <div className="rounded-xl border border-orange-200 bg-orange-50/60 p-3 flex items-center gap-2">
+                                <AlertCircle className="w-4 h-4 text-orange-600 shrink-0" />
+                                <p className="text-xs text-orange-700">
+                                  This order is awaiting credential fulfillment. It will appear here once a credential is available.
+                                </p>
                               </div>
                             ) : order.status === "completed" ? (
                               <div className="rounded-xl border border-yellow-200 bg-yellow-50/60 p-3 flex items-center gap-2">

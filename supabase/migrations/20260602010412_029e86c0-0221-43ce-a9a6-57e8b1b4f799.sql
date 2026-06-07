@@ -4,7 +4,7 @@ create type public.app_role as enum ('user', 'admin');
 create type public.tx_type as enum ('credit', 'debit');
 create type public.tx_status as enum ('pending', 'success', 'failed', 'reversed');
 create type public.payment_provider as enum ('paystack', 'nowpayments', 'manual');
-create type public.order_status as enum ('pending', 'completed', 'failed', 'refunded');
+create type public.order_status as enum ('pending', 'completed', 'pending_credentials', 'failed', 'refunded');
 
 -- Profiles
 create table public.profiles (
