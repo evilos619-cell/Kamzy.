@@ -20,6 +20,9 @@ git config pull.rebase false
 # Set authenticated remote (PAT embedded in URL)
 git remote set-url origin "$REPO"
 
+# Stop tracking attached_assets/ (already in .gitignore — remove from index if still tracked)
+git rm -r --cached attached_assets/ 2>/dev/null || true
+
 # Stage everything
 git add -A
 

@@ -25,6 +25,9 @@ dist-ssr
 .wrangler/
 .dev.vars
 
+# Replit-attached screenshots and uploads — not part of source
+attached_assets/
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json
