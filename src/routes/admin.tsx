@@ -1137,10 +1137,21 @@ function CredentialsDialog({ product, onClose }: { product: Product; onClose: ()
     const lines = bulkText.split("\n").map((l) => l.trim()).filter(Boolean);
     if (!lines.length) return toast.error("Enter at least one credential");
     setAdding(true);
-    const rows = lines.map((content, i) => ({
-      product_id: product.id, content,
-      label: bulkLabel.trim() ? `${bulkLabel.trim()} #${i + 1}` : null,
-    }));
+
+    const rows = lines.map((content, i) => {
+      const parts = content.split(/\||\//).map((part) => part.trim());
+      return {
+        product_id: product.id,
+        content,
+        label: bulkLabel.trim() ? `${bulkLabel.trim()} #${i + 1}` : null,
+        username: parts[0] || null,
+        password: parts[1] || null,
+        email: parts[2] || null,
+        email_password: parts[3] || null,
+        two_factor: parts[4] || null,
+      };
+    });
+
     const { error } = await supabase.from("product_credentials").insert(rows);
     setAdding(false);
     if (error) { toast.error(error.message); return; }
@@ -1192,8 +1203,8 @@ function CredentialsDialog({ product, onClose }: { product: Product; onClose: ()
               <Label className="text-xs">Credentials — one per line</Label>
               <textarea value={bulkText} onChange={(e) => setBulkText(e.target.value)} rows={5}
                 className="mt-1 w-full rounded-md border border-input px-3 py-2 text-sm font-mono resize-none focus:outline-none focus:ring-2 focus:ring-brand-orange/30"
-                placeholder={"username/password/email/emailpassword/2fa\nusername2/password2/email2/emailpass2/2fa2"} />
-              <p className="text-xs text-muted-foreground mt-1">Format: <code className="bg-muted px-1 rounded">username/password/email/emailpassword/2fa</code> — each line = one credential slot.</p>
+                placeholder={"username|password|email|email_password|2fa\nusername2|password2|email2|email_password2|2fa2"} />
+              <p className="text-xs text-muted-foreground mt-1">Format: <code className="bg-muted px-1 rounded">username|password|email|email_password|2fa</code> — each line = one credential slot.</p>
             </div>
             <Button onClick={handleBulkAdd} disabled={adding || !bulkText.trim()} className="w-full bg-brand-orange hover:bg-brand-orange-hover text-white">
               {adding && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}

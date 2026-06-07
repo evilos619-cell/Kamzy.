@@ -20,8 +20,8 @@ type DeliveredCred = { content: string; label: string | null };
 
 const CRED_FIELDS = ["Username", "Password", "Email", "Email Password", "2FA Code"];
 function parseCred(content: string) {
-  const parts = content.split("/");
-  return CRED_FIELDS.map((label, i) => ({ label, value: parts[i]?.trim() ?? "" })).filter((f) => f.value);
+  const parts = content.split(/\||\//).map((part) => part.trim());
+  return CRED_FIELDS.map((label, i) => ({ label, value: parts[i] ?? "" })).filter((f) => f.value);
 }
 
 const platformIcons: Record<string, React.ElementType> = {

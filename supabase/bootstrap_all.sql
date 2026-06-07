@@ -231,6 +231,11 @@ CREATE TABLE IF NOT EXISTS public.product_credentials (
   id           uuid        PRIMARY KEY DEFAULT gen_random_uuid(),
   product_id   uuid        NOT NULL REFERENCES public.products(id) ON DELETE CASCADE,
   content      text        NOT NULL,
+  username     text,
+  password     text,
+  email        text,
+  email_password text,
+  two_factor   text,
   label        text,
   order_id     uuid        REFERENCES public.orders(id) ON DELETE SET NULL,
   assigned_to  uuid,
@@ -394,6 +399,7 @@ BEGIN
     VALUES (_user_id, v_total, v_product.currency, 'completed', v_tx_id) RETURNING id INTO v_order_id;
   INSERT INTO public.order_items(order_id, product_id, title, unit_price, quantity)
     VALUES (v_order_id, v_product.id, v_product.title, v_product.price, _quantity);
+  PERFORM public.assign_credential_to_order(v_order_id, _product_id);
   RETURN v_order_id;
 END;
 $$;

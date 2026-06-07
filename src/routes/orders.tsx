@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { supabase } from "@/integrations/supabase/client";
+import { assignCredentialToOrder } from "@/lib/api/delivery";
 import { useAuth } from "@/lib/auth";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -39,8 +40,8 @@ type Order = {
 
 const CRED_FIELDS = ["Username", "Password", "Email", "Email Password", "2FA Code"];
 function parseCredential(content: string) {
-  const parts = content.split("/");
-  return CRED_FIELDS.map((label, i) => ({ label, value: parts[i]?.trim() ?? "" })).filter((f) => f.value);
+  const parts = content.split(/\||\//).map((part) => part.trim());
+  return CRED_FIELDS.map((label, i) => ({ label, value: parts[i] ?? "" })).filter((f) => f.value);
 }
 
 const STATUS_META: Record<string, { label: string; color: string; icon: React.ReactNode }> = {
@@ -122,6 +123,25 @@ export default function OrdersPage() {
     const enriched: Order[] = (rawOrders as Array<{
       id: string; total: number; currency: string; status: string; created_at: string;
     }>).map((o) => ({ ...o, items: itemsByOrder[o.id] ?? [] }));
+
+    const pendingAssignments = enriched.flatMap((order) =>
+      order.items
+        .filter((item) => order.status === "completed" && !item.credential && item.product_id)
+        .map((item) => ({ orderId: order.id, productId: item.product_id }))
+    );
+
+    if (pendingAssignments.length > 0) {
+      const assignmentResults = await Promise.allSettled(
+        pendingAssignments.map(async (item) => {
+          const delivery = await assignCredentialToOrder({ orderId: item.orderId, productId: item.productId });
+          return delivery.assigned ? item.orderId : null;
+        })
+      );
+
+      if (assignmentResults.some((result) => result.status === "fulfilled" && result.value)) {
+        return fetchOrders();
+      }
+    }
 
     setOrders(enriched);
     if (enriched.length > 0) setExpanded(new Set([enriched[0].id]));

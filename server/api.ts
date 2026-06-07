@@ -349,8 +349,27 @@ app.post("/api/delivery/assign-credential", async (req, res) => {
   if (orderErr || !order) return err(res, 404, "Order not found");
   if ((order as Record<string, unknown>).user_id !== user.id) return err(res, 403, "Forbidden");
 
-  const ageMs = Date.now() - new Date((order as Record<string, unknown>).created_at as string).getTime();
-  if (ageMs > 10 * 60 * 1000) return err(res, 400, "Order too old for credential assignment");
+  const { data: existingItem } = await supabaseAdmin!
+    .from("order_items")
+    .select("delivered_payload")
+    .eq("order_id", orderId)
+    .eq("product_id", productId)
+    .limit(1)
+    .single();
+
+  if (existingItem?.delivered_payload) {
+    const { data: cred } = await supabaseAdmin!
+      .from("product_credentials")
+      .select("content, label")
+      .eq("id", existingItem.delivered_payload)
+      .single();
+
+    return res.json({
+      assigned: true,
+      content: (cred as Record<string, unknown> | null)?.content ?? null,
+      label: (cred as Record<string, unknown> | null)?.label ?? null,
+    });
+  }
 
   const { data: credId, error: assignErr } = await supabaseAdmin!.rpc(
     "assign_credential_to_order" as never,

@@ -170,6 +170,12 @@ const STATUS_COLORS: Record<string, string> = {
   failed: "bg-red-100 text-red-700", refunded: "bg-blue-100 text-blue-700",
 };
 
+const CRED_FIELDS = ["Username", "Password", "Email", "Email Password", "2FA Code"];
+function parseCredential(content: string) {
+  const parts = content.split(/\||\//).map((part) => part.trim());
+  return CRED_FIELDS.map((label, i) => ({ label, value: parts[i] ?? "" })).filter((f) => f.value);
+}
+
 function OrderCard({ order }: { order: Order }) {
   const [credOpen, setCredOpen] = useState(false);
   const [creds, setCreds] = useState<Credential[]>([]);
@@ -248,8 +254,19 @@ function OrderCard({ order }: { order: Order }) {
                 {creds.map((c) => (
                   <div key={c.id} className="rounded-xl border border-border overflow-hidden">
                     {c.label && <div className="bg-muted/50 px-4 py-2 text-xs font-medium text-brand-navy border-b border-border">{c.label}</div>}
-                    <div className="relative">
-                      <pre className="p-4 text-sm font-mono whitespace-pre-wrap break-all leading-relaxed max-h-48 overflow-y-auto bg-muted/20">{c.content}</pre>
+                    <div className="relative p-4 bg-muted/20">
+                      {parseCredential(c.content).length > 0 ? (
+                        <div className="space-y-2">
+                          {parseCredential(c.content).map(({ label, value }) => (
+                            <div key={label} className="flex items-start gap-2 text-sm">
+                              <span className="text-xs font-semibold text-brand-navy w-28 shrink-0 pt-0.5">{label}</span>
+                              <span className="font-mono text-brand-navy break-all">{value}</span>
+                            </div>
+                          ))}
+                        </div>
+                      ) : (
+                        <pre className="text-sm font-mono whitespace-pre-wrap break-all leading-relaxed">{c.content}</pre>
+                      )}
                       <Button size="sm" variant="ghost" onClick={() => handleCopy(c.content, c.id)}
                         className="absolute top-2 right-2 h-7 px-2 text-xs text-muted-foreground hover:text-brand-navy">
                         {copied === c.id ? <><CheckCheck className="w-3.5 h-3.5 mr-1 text-green-500" />Copied!</> : <><Copy className="w-3.5 h-3.5 mr-1" />Copy</>}

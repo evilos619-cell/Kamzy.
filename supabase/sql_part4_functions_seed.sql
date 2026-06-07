@@ -90,6 +90,7 @@ BEGIN
     VALUES (_user_id,v_total,v_product.currency,'completed',v_tx_id) RETURNING id INTO v_order_id;
   INSERT INTO public.order_items(order_id,product_id,title,unit_price,quantity)
     VALUES (v_order_id,v_product.id,v_product.title,v_product.price,_quantity);
+  PERFORM public.assign_credential_to_order(v_order_id, _product_id);
   RETURN v_order_id;
 END;
 $$;

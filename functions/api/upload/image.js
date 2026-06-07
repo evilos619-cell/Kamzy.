@@ -3,7 +3,7 @@
 // Auto-creates the "product-images" Supabase Storage bucket on first use,
 // then uploads and returns the public URL.
 
-const BUCKET = "product-images";
+const DEFAULT_BUCKET = "product-images";
 
 function json(body, status = 200) {
   return new Response(JSON.stringify(body), {
@@ -12,20 +12,28 @@ function json(body, status = 200) {
   });
 }
 
-async function ensureBucket(supabaseUrl, serviceKey) {
-  await fetch(`${supabaseUrl}/storage/v1/bucket`, {
+async function ensureBucket(supabaseUrl, serviceKey, bucket) {
+  const res = await fetch(`${supabaseUrl}/storage/v1/bucket`, {
     method: "POST",
     headers: {
       Authorization: `Bearer ${serviceKey}`,
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ id: BUCKET, name: BUCKET, public: true }),
+    body: JSON.stringify({ id: bucket, name: bucket, public: true }),
   });
+
+  if (res.ok || res.status === 409) {
+    return;
+  }
+
+  const err = await res.json().catch(() => ({}));
+  throw new Error((err.error || err.message || "Bucket creation failed") as string);
 }
 
 export async function onRequestPost({ request, env }) {
-  const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
-  const serviceKey  = env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const supabaseUrl = env.SUPABASE_URL || env.VITE_SUPABASE_URL || "";
+  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY || env.VITE_SUPABASE_SERVICE_ROLE_KEY || "";
+  const bucket = env.SUPABASE_STORAGE_BUCKET || env.VITE_SUPABASE_STORAGE_BUCKET || DEFAULT_BUCKET;
 
   if (!supabaseUrl || !serviceKey) {
     return json({ error: "Storage not configured on server" }, 503);
@@ -49,8 +57,10 @@ export async function onRequestPost({ request, env }) {
   await ensureBucket(supabaseUrl, serviceKey);
 
   const bytes     = await file.arrayBuffer();
+  await ensureBucket(supabaseUrl, serviceKey, bucket);
+
   const uploadRes = await fetch(
-    `${supabaseUrl}/storage/v1/object/${BUCKET}/${fileName}`,
+    `${supabaseUrl}/storage/v1/object/${encodeURIComponent(bucket)}/${encodeURIComponent(fileName)}`,
     {
       method: "POST",
       headers: {
@@ -67,6 +77,6 @@ export async function onRequestPost({ request, env }) {
     return json({ error: err.error || err.message || "Upload failed" }, uploadRes.status);
   }
 
-  const publicUrl = `${supabaseUrl}/storage/v1/object/public/${BUCKET}/${fileName}`;
+  const publicUrl = `${supabaseUrl}/storage/v1/object/public/${encodeURIComponent(bucket)}/${encodeURIComponent(fileName)}`;
   return json({ url: publicUrl });
 }

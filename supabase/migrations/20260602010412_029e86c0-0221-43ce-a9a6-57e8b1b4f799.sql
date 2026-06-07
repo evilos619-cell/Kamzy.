@@ -265,6 +265,7 @@ begin
 
   insert into public.orders(user_id, total, currency, status, wallet_tx_id) values (_user_id, v_total, v_product.currency, 'completed', v_tx_id) returning id into v_order_id;
   insert into public.order_items(order_id, product_id, title, unit_price, quantity) values (v_order_id, v_product.id, v_product.title, v_product.price, _quantity);
+  perform public.assign_credential_to_order(v_order_id, _product_id);
   return v_order_id;
 end;
 $$;
