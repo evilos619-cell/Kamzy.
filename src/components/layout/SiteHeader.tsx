@@ -41,9 +41,11 @@ export function SiteHeader() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-[68px] gap-4">
             <Link to="/" className="flex items-center gap-2 shrink-0">
-              <span className="text-xl font-bold tracking-tight text-brand-navy">
-                SAMMY <span className="text-brand-orange">STORE</span>
-              </span>
+              <img
+  src="/images/logo.png"
+  alt="Sammy Store"
+  className="h-10 w-auto object-contain"
+/>
             </Link>
 
             <div className="hidden md:flex flex-1 max-w-xl">
