@@ -187,7 +187,7 @@ export default function ProductsPage() {
                 <motion.button key={category.id}
                   initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}
                   transition={{ duration: 0.45, delay: index * 0.08 }} whileHover={{ y: -4 }}
-                  onClick={() => setCat(isActive ? undefined : category.slug)}
+                  onClick={() => navigate(`/products/${category.slug}`)}
                   className={`group text-left bg-card rounded-2xl p-6 shadow-sm hover:shadow-lg transition-all border ${isActive ? "border-brand-orange ring-2 ring-brand-orange/30" : "border-border"}`}>
                   <div className="flex items-start justify-between mb-4">
                     <div className={`w-14 h-14 rounded-2xl flex items-center justify-center transition-colors ${isActive ? "bg-brand-orange" : `${bg} group-hover:bg-brand-orange`}`}>
