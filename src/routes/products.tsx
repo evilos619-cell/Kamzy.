@@ -56,15 +56,6 @@ export default function ProductsPage() {
   const [dbCategories, setDbCategories] = useState<DbCategory[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [productsLoading, setProductsLoading] = useState(false);
-  const [buyTarget, setBuyTarget] = useState<Product | null>(null);
-  const [buying, setBuying] = useState(false);
-  const [walletBalance, setWalletBalance] = useState<number | null>(null);
-  const [deliveredCred, setDeliveredCred] = useState<DeliveredCred | null>(null);
-  const [purchaseOrderId, setPurchaseOrderId] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
-  const [topUpOpen, setTopUpOpen] = useState(false);
-  const [topUpAmount, setTopUpAmount] = useState<number | undefined>(undefined);
-
 
   const activeCat = searchParams.get("cat") ?? undefined;
   const activeCategory = dbCategories.find((c) => c.slug === activeCat);
@@ -89,120 +80,17 @@ export default function ProductsPage() {
       .then(({ data }) => { setProducts((data as Product[]) ?? []); setProductsLoading(false); });
   }, [activeCat, dbCategories]);
 
-  // Fetch wallet balance + subscribe realtime so balance reflects
-  // immediately after admin credits or Paystack top-up completes.
-  useEffect(() => {
-    if (!user) return;
-    const fetchBalance = () => {
-      supabase
-        .from("wallets")
-        .select("balance")
-        .eq("user_id", user.id)
-        .single()
-        .then(({ data }) => { if (data) setWalletBalance(Number(data.balance)); });
-    };
-    fetchBalance();
-    const channel = supabase
-      .channel("products-wallet-rt")
-      .on(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        "postgres_changes" as any,
-        { event: "UPDATE", schema: "public", table: "wallets", filter: `user_id=eq.${user.id}` } as any,
-        (payload: any) => { setWalletBalance(Number(payload.new.balance)); }
-      )
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
-  }, [user]);
-
   const displayCategories = dbCategories.length > 0
     ? dbCategories
     : staticCategories.map((c) => ({ id: String(c.id), name: c.name, slug: c.slug, description: null }));
 
-  const refreshProducts = () => {
-    const catId = dbCategories.find((c) => c.slug === activeCat)?.id;
-    if (!catId) return;
-    supabase.from("products").select("id, title, price, stock, description, image_url, slug, currency")
-      .eq("published", true).eq("category_id", catId).order("price")
-      .then(({ data }) => setProducts((data as Product[]) ?? []));
-  };
-
-  const handleBuy = async () => {
-    if (!buyTarget || !user) return;
-    if (walletBalance === null) return toast.error("Wallet not found");
-    if (walletBalance < buyTarget.price) {
-      toast.error(`Insufficient balance — need ₦${buyTarget.price.toLocaleString()}, have ₦${walletBalance.toLocaleString()}`);
-      return;
-    }
-
-    setBuying(true);
-
-    // Ensure the user session is fresh before purchasing
-    await supabase.auth.getSession();
-
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    const { data: orderId, error } = await (supabase.rpc as any)("purchase_with_wallet", {
-      _user_id: user.id,
-      _product_id: buyTarget.id,
-      _quantity: 1,
-    });
-
-    if (error) {
-      setBuying(false);
-      console.error("[Buy] purchase_with_wallet error:", error);
-      if (error.message.includes("insufficient") || error.message.includes("balance"))
-        toast.error("Insufficient wallet balance. Please top up and try again.");
-      else if (error.message.includes("stock") || error.message.includes("out"))
-        toast.error("This product is out of stock.");
-      else
-        toast.error(error.message || "Purchase failed. Please try again.");
-      return;
-    }
-
-    if (!orderId) {
-      setBuying(false);
-      toast.error("Purchase failed — no order ID returned. Please contact support.");
-      return;
-    }
-
-    // Refresh wallet balance (realtime also handles this, but fetch immediately too)
-    supabase.from("wallets").select("balance").eq("user_id", user.id).single()
-      .then(({ data }) => { if (data) setWalletBalance(Number(data.balance)); });
-    refreshProducts();
-
-    try {
-      const delivery = await assignCredentialToOrder({ orderId: orderId as string, productId: buyTarget.id });
-      setBuying(false);
-      setPurchaseOrderId(orderId as string);
-      if (delivery.assigned && delivery.content) {
-        setDeliveredCred({ content: delivery.content, label: delivery.label });
-      } else {
-        setDeliveredCred(null);
-      }
-    } catch (deliveryErr) {
-      console.warn("[Buy] credential delivery error:", deliveryErr);
-      setBuying(false);
-      setPurchaseOrderId(orderId as string);
-      setDeliveredCred(null);
-    }
-  };
-
-  const handleCopy = () => {
-    if (!deliveredCred?.content) return;
-    navigator.clipboard.writeText(deliveredCred.content);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const closePurchaseResult = () => {
-    setBuyTarget(null);
-    setPurchaseOrderId(null);
-    setDeliveredCred(null);
-    setCopied(false);
-  };
-
   const setCat = (slug: string | undefined) => {
     if (slug) setSearchParams({ cat: slug });
     else setSearchParams({});
+  };
+
+  const handleProductClick = (product: Product) => {
+    navigate(`/products/${product.slug}`);
   };
 
   return (
@@ -230,122 +118,55 @@ export default function ProductsPage() {
             })}
           </div>
 
-          {/* Products grid (simplified for brevity) */}
+          {/* Products grid */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             {productsLoading ? (
               <div className="col-span-full text-center py-12"><Loader2 className="mx-auto" /></div>
             ) : products.map((p) => (
-              <Card key={p.id}>
-                <CardContent>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <h3 className="text-lg font-semibold">{p.title}</h3>
-                      <div className="text-sm text-slate-500">₦{p.price.toLocaleString()}</div>
-                    </div>
-                    <div>
-                      <Button onClick={() => { setBuyTarget(p); }} disabled={p.stock <= 0}>Buy</Button>
+              <Card key={p.id} className="overflow-hidden hover:shadow-lg transition-shadow cursor-pointer" onClick={() => handleProductClick(p)}>
+                <CardContent className="p-0">
+                  {/* Product Image Placeholder */}
+                  <div className="aspect-square bg-slate-100 flex items-center justify-center overflow-hidden">
+                    {p.image_url ? (
+                      <img src={p.image_url} alt={p.title} className="w-full h-full object-cover hover:scale-105 transition-transform" />
+                    ) : (
+                      <ShoppingBag className="w-12 h-12 text-slate-300" />
+                    )}
+                  </div>
+                  
+                  {/* Product Info */}
+                  <div className="p-4">
+                    <h3 className="text-lg font-semibold text-brand-navy line-clamp-2">{p.title}</h3>
+                    <div className="flex items-center justify-between mt-3">
+                      <div>
+                        <div className="text-2xl font-bold text-brand-orange">
+                          ₦{p.price.toLocaleString()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">
+                          {p.stock > 0 ? `${p.stock} available` : 'Out of stock'}
+                        </div>
+                      </div>
+                      <div>
+                        {p.stock > 0 ? (
+                          <Badge className="bg-green-100 text-green-700 text-xs">In Stock</Badge>
+                        ) : (
+                          <Badge className="bg-red-100 text-red-700 text-xs">Out of Stock</Badge>
+                        )}
+                      </div>
                     </div>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
+
+          {!productsLoading && products.length === 0 && activeCat && (
+            <div className="text-center py-12 text-muted-foreground">
+              <p>No products available in this category.</p>
+            </div>
+          )}
         </div>
       </section>
-
-      {/* Purchase Confirmation Dialog */}
-      {buyTarget && (
-        <Dialog open={!!buyTarget} onOpenChange={(open) => !open && closePurchaseResult()}>
-          <DialogContent className="max-w-md">
-            <DialogHeader>
-              <DialogTitle>
-                {purchaseOrderId ? "Purchase Successful!" : "Confirm Purchase"}
-              </DialogTitle>
-            </DialogHeader>
-            {!purchaseOrderId ? (
-              <div className="space-y-4 py-4">
-                <div className="p-4 bg-slate-50 rounded-lg">
-                  <div className="text-sm text-muted-foreground">Product</div>
-                  <div className="font-semibold text-lg mt-1">{buyTarget.title}</div>
-                  <div className="text-lg font-bold text-brand-orange mt-2">
-                    ₦{buyTarget.price.toLocaleString()}
-                  </div>
-                </div>
-                {walletBalance !== null && (
-                  <div className="text-sm">
-                    <span className="text-muted-foreground">Balance after: </span>
-                    <span className="font-semibold">
-                      ₦{(walletBalance - buyTarget.price).toLocaleString()}
-                    </span>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <div className="space-y-4 py-4">
-                <div className="flex items-center justify-center w-12 h-12 mx-auto bg-green-100 rounded-full">
-                  <PackageCheck className="w-6 h-6 text-green-600" />
-                </div>
-                <div className="text-center">
-                  <p className="text-sm text-muted-foreground">Order ID: {purchaseOrderId}</p>
-                </div>
-                {deliveredCred && (
-                  <div className="p-3 bg-slate-50 rounded-lg space-y-2">
-                    <p className="text-xs font-semibold text-muted-foreground">
-                      {deliveredCred.label || "Credentials"}
-                    </p>
-                    <div className="font-mono text-xs break-all bg-white p-2 rounded border border-border">
-                      {deliveredCred.content}
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleCopy}
-                      className="w-full"
-                    >
-                      {copied ? (
-                        <>
-                          <CheckCheck className="w-4 h-4 mr-1" />
-                          Copied!
-                        </>
-                      ) : (
-                        <>
-                          <Copy className="w-4 h-4 mr-1" />
-                          Copy Credentials
-                        </>
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            )}
-            <DialogFooter>
-              {!purchaseOrderId ? (
-                <>
-                  <Button
-                    variant="outline"
-                    onClick={closePurchaseResult}
-                    disabled={buying}
-                  >
-                    Cancel
-                  </Button>
-                  <Button
-                    onClick={handleBuy}
-                    disabled={buying}
-                    className="bg-brand-orange hover:bg-brand-orange-hover text-white"
-                  >
-                    {buying && <Loader2 className="w-4 h-4 mr-1 animate-spin" />}
-                    Confirm Purchase
-                  </Button>
-                </>
-              ) : (
-                <Button onClick={closePurchaseResult} className="w-full">
-                  Close
-                </Button>
-              )}
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
-      )}
     </>
   );
 }
