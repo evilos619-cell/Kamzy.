@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="700" viewBox="0 0 1200 700">
+  <defs>
+    <linearGradient id="g2" x1="0" x2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="700" fill="#0b1220" />
+  <circle cx="980" cy="120" r="120" fill="url(#g2)" opacity="0.18" />
+  <rect x="80" y="80" width="520" height="420" rx="30" fill="#ffffff" opacity="0.04" />
+  <text x="110" y="160" font-family="Plus Jakarta Sans, Inter" font-size="48" font-weight="700" fill="#fff">Creative Digital Solutions</text>
+  <text x="110" y="210" font-family="Inter" font-size="20" fill="#cfe3ff">We help brands grow with tailored social media strategies, content and ads.</text>
+</svg>

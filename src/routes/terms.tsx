@@ -19,19 +19,19 @@ export default function TermsPage() {
           <div className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-brand-orange/5 border border-brand-orange/20">
             <FileText className="w-5 h-5 text-brand-orange shrink-0" />
             <p className="text-sm text-muted-foreground">
-              Please read these Terms of Service carefully before using Sammy Store Logs. By accessing or using our platform, you agree to be bound by these terms.
+              Please read these Terms of Service carefully before using Kamzybot's Media. By accessing or using our platform, you agree to be bound by these terms.
             </p>
           </div>
 
           <div className="prose prose-slate max-w-none space-y-8">
 
             <Section title="1. Acceptance of Terms">
-              <p>By accessing and using Sammy Store Logs ("Platform", "we", "us", or "our") at mmystorelogs.com, you accept and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, please do not use our Platform.</p>
+              <p>By accessing and using Kamzybot's Media ("Platform", "we", "us", or "our"), you accept and agree to be bound by these Terms of Service and our Privacy Policy. If you do not agree to these terms, please do not use our Platform.</p>
               <p>We reserve the right to update these Terms at any time. Continued use of the Platform after changes constitutes acceptance of the revised Terms.</p>
             </Section>
 
             <Section title="2. Nature of Products and Services">
-              <p>Sammy Store Logs is a digital goods marketplace that sells social media account credentials, aged accounts, and related digital products. All products are:</p>
+              <p>Kamzybot's Media provides digital solutions and creative services for social media growth. Our offerings may include account services, content strategy guidance, growth consultation, and related digital products. All products and services are:</p>
               <ul>
                 <li>Delivered digitally via your order dashboard immediately after payment</li>
                 <li>Transferred "as-is" — we do not guarantee continued access beyond the point of delivery</li>
@@ -63,10 +63,10 @@ export default function TermsPage() {
             </Section>
 
             <Section title="5. Wallet and Payment">
-              <p>Sammy Store Logs uses a pre-funded wallet system:</p>
+              <p>KAMZYBOT'S MEDIA uses a pre-funded wallet system:</p>
               <ul>
                 <li>All transactions are conducted in Nigerian Naira (NGN)</li>
-                <li>Wallet funds may be added via Paystack (card, bank transfer, USSD) or NOWPayments (cryptocurrency)</li>
+                <li>Wallet funds may be added via Paystack (card, bank transfer, USSD) or Monify (crypto / alternative providers)</li>
                 <li>Wallet funds are non-transferable between users</li>
                 <li>We are not responsible for delays caused by payment processors or blockchain congestion</li>
                 <li>Minimum top-up amount is ₦100</li>
@@ -98,7 +98,7 @@ export default function TermsPage() {
             </Section>
 
             <Section title="8. Intellectual Property">
-              <p>All content on the Sammy Store Logs Platform — including logos, text, graphics, and software — is owned by or licensed to Sammy Store Logs. You may not reproduce, distribute, or create derivative works without prior written consent.</p>
+              <p>All content on the KAMZYBOT'S MEDIA platform — including logos, text, graphics, and software — is owned by or licensed to KAMZYBOT'S MEDIA. You may not reproduce, distribute, or create derivative works without prior written consent.</p>
             </Section>
 
             <Section title="9. Disclaimer of Warranties">
@@ -107,12 +107,12 @@ export default function TermsPage() {
             </Section>
 
             <Section title="10. Limitation of Liability">
-              <p>To the maximum extent permitted by applicable law, Sammy Store Logs shall not be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of profits, data, or goodwill — arising out of or in connection with your use of the Platform.</p>
+              <p>To the maximum extent permitted by applicable law, KAMZYBOT'S MEDIA shall not be liable for any indirect, incidental, special, consequential, or punitive damages — including loss of profits, data, or goodwill — arising out of or in connection with your use of the Platform.</p>
               <p>Our total cumulative liability to you shall not exceed the amount you paid for the specific product or service giving rise to the claim in the thirty (30) days preceding the claim.</p>
             </Section>
 
             <Section title="11. Indemnification">
-              <p>You agree to indemnify, defend, and hold harmless Sammy Store Logs and its officers, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with your access to or use of the Platform, your violation of these Terms, or your violation of any rights of another party.</p>
+              <p>You agree to indemnify, defend, and hold harmless KAMZYBOT'S MEDIA and its officers, employees, and agents from and against any claims, liabilities, damages, losses, and expenses arising out of or in any way connected with your access to or use of the Platform, your violation of these Terms, or your violation of any rights of another party.</p>
             </Section>
 
             <Section title="12. Governing Law">
@@ -122,7 +122,7 @@ export default function TermsPage() {
             <Section title="13. Contact Us">
               <p>If you have questions or concerns about these Terms, please contact us:</p>
               <ul>
-                <li><strong>Email:</strong> 1sammystore1@gmail.com</li>
+                <li><strong>Email:</strong> contact@kamzybotsmedia.com</li>
                 <li><strong>Platform:</strong> <Link to="/contact" className="text-brand-orange hover:underline">Contact Form</Link></li>
               </ul>
             </Section>

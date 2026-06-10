@@ -1,12 +1,22 @@
 // Cloudflare Pages Function — POST /api/payment/nowpayments-invoice
+// Supports NOWPayments (legacy) and Monify (if configured). This file updates
+// provider identifiers used for payment_intents lookup without changing core
+// payment logic. If Monify is used you must provide MONIFY_API_KEY and
+// MONIFY_API_URL in the environment; otherwise the function will fall back to
+// NOWPAYMENTS_API_KEY and the NOWPayments endpoint.
 
 export async function onRequestPost({ request, env }) {
   const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
-  const serviceKey  = env.SUPABASE_SERVICE_ROLE_KEY || "";
-  const nowKey      = env.NOWPAYMENTS_API_KEY || "";
+  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const monifyKey = env.MONIFY_API_KEY || "";
+  const nowKey = env.NOWPAYMENTS_API_KEY || "";
+  const apiKey = monifyKey || nowKey;
+
+  // Determine provider name for DB records and lookups
+  const provider = monifyKey ? "monify" : nowKey ? "nowpayments" : "";
 
   if (!supabaseUrl || !serviceKey) return json({ error: "Server not configured" }, 503);
-  if (!nowKey) return json({ error: "NOWPayments not configured — contact support" }, 500);
+  if (!apiKey) return json({ error: "Payment provider API key not configured" }, 500);
 
   const auth = request.headers.get("Authorization") || "";
   if (!auth.startsWith("Bearer ")) return json({ error: "Unauthorized" }, 401);
@@ -17,32 +27,45 @@ export async function onRequestPost({ request, env }) {
   if (!amount || !userId || !reference) return json({ error: "amount, userId and reference required" }, 400);
   if (userId !== user.id) return json({ error: "Forbidden" }, 403);
 
-  // Verify intent exists
-  const intentRes = await sbFetch(supabaseUrl, serviceKey,
-    `/rest/v1/payment_intents?reference=eq.${encodeURIComponent(reference)}&user_id=eq.${userId}&provider=eq.nowpayments&limit=1`);
+  // Verify intent exists (use detected provider)
+  const intentRes = await sbFetch(
+    supabaseUrl,
+    serviceKey,
+    `/rest/v1/payment_intents?reference=eq.${encodeURIComponent(reference)}&user_id=eq.${userId}&provider=eq.${provider}&limit=1`
+  );
   const intents = await intentRes.json();
   if (!intents[0]) return json({ error: "Invalid payment reference" }, 400);
 
-  const siteUrl = env.SITE_URL || "https://sammystorelogs.com";
+  const siteUrl = env.SITE_URL || "https://kamzybotsmedia.com";
 
-  const nowRes = await fetch("https://api.nowpayments.io/v1/invoice", {
+  // Choose API endpoint: NOWPayments (default) or MONIFY_API_URL (if using Monify)
+  const apiUrl = provider === "nowpayments" ? "https://api.nowpayments.io/v1/invoice" : env.MONIFY_API_URL || "";
+
+  if (provider === "monify" && !apiUrl) {
+    return json({ error: "Monify configured but MONIFY_API_URL is missing" }, 501);
+  }
+
+  const res = await fetch(apiUrl, {
     method: "POST",
-    headers: { "x-api-key": nowKey, "Content-Type": "application/json" },
+    headers: { "x-api-key": apiKey, "Content-Type": "application/json" },
     body: JSON.stringify({
       price_amount: amount,
       price_currency: "ngn",
       order_id: reference,
-      order_description: "Sammy Store Logs — Wallet Funding",
+      order_description: "KAMZYBOT'S MEDIA — Wallet Funding",
       success_url: `${siteUrl}/wallet?funded=crypto`,
-      cancel_url:  `${siteUrl}/wallet`,
+      cancel_url: `${siteUrl}/wallet`,
     }),
   });
-  if (!nowRes.ok) {
-    const msg = await nowRes.text();
-    return json({ error: `NOWPayments error: ${msg}` }, 502);
+
+  if (!res.ok) {
+    const msg = await res.text();
+    return json({ error: `${provider} error: ${msg}` }, 502);
   }
-  const invoice = await nowRes.json();
-  return json({ invoiceUrl: invoice.invoice_url, invoiceId: invoice.id });
+  const invoice = await res.json();
+
+  // Response shape may vary between providers; attempt common fields
+  return json({ invoiceUrl: invoice.invoice_url || invoice.payment_url || invoice.url, invoiceId: invoice.id || invoice.payment_id || null });
 }
 
 async function getUser(supabaseUrl, serviceKey, token) {

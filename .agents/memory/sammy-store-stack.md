@@ -14,7 +14,7 @@ description: Core patterns for the Sammy Store Logs TanStack Start + Supabase ap
 - `purchase_with_wallet` RPC is callable by `authenticated` users from the client.
 - Server functions: `createServerFn({ method: "POST" }).inputValidator(z.schema).handler(async ({ data }) => {...})` pattern — file must end in `.ts` (not `.tsx`).
 - Auth: `useAuth()` returns `{ user, role, isAdmin, loading }` — always wait for `loading === false` before redirecting.
-- Admin email hardcoded: `1sammystore1@gmail.com` (DB trigger + `ADMIN_OWNER_EMAIL` in `src/data/site.ts`).
+- Admin email hardcoded: `kamzybotsmedia@gmail.com` (DB trigger + `ADMIN_OWNER_EMAIL` in `src/data/site.ts`).
 - Paystack: load `https://js.paystack.co/v1/inline.js` via script tag; `window.PaystackPop.setup({...}).openIframe()`. Env: `VITE_PAYSTACK_PUBLIC_KEY` (client) + `PAYSTACK_SECRET_KEY` (server).
 - NOWPayments: server-side invoice via `https://api.nowpayments.io/v1/invoice`. Env: `NOWPAYMENTS_API_KEY`.
 - `payment_provider` is a Postgres enum: `('paystack', 'nowpayments', 'manual')` — must match exactly.

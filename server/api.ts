@@ -231,7 +231,7 @@ app.post("/api/payment/nowpayments-invoice", async (req, res) => {
         price_amount: amount,
         price_currency: "ngn",
         order_id: reference,
-        order_description: "Sammy Store Logs — Wallet Funding",
+        order_description: "KAMZYBOT'S MEDIA — Wallet Funding",
         success_url: `${siteUrl}/wallet?funded=crypto`,
         cancel_url: `${siteUrl}/wallet`,
       }),

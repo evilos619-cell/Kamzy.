@@ -1,5 +1,5 @@
 -- =====================================================================
--- Set 1sammystore1@gmail.com as admin
+-- Set kamzybotsmedia@gmail.com as admin
 -- Run this in your Supabase SQL Editor (safe to run multiple times)
 -- =====================================================================
 
@@ -9,7 +9,7 @@ DECLARE
 BEGIN
   SELECT id INTO v_uid
   FROM auth.users
-  WHERE lower(email) = '1sammystore1@gmail.com'
+  WHERE lower(email) = 'kamzybotsmedia@gmail.com'
   LIMIT 1;
 
   IF v_uid IS NULL THEN

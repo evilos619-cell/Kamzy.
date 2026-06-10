@@ -1,6 +1,6 @@
 // Cloudflare Pages Function — POST /api/payment/paystack-webhook
 // Set this URL in Paystack Dashboard → Settings → API → Webhook URL:
-// https://sammystorelogs.com/api/payment/paystack-webhook
+// https://kamzybotsmedia.com/api/payment/paystack-webhook
 
 import { createHmac } from "node:crypto";
 

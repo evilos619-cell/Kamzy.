@@ -32,7 +32,7 @@ export default function HomePage() {
               transition={{ duration: 0.4 }}
               className="inline-flex items-center gap-2 rounded-full border border-brand-orange/30 bg-brand-orange/10 px-4 py-1.5 text-xs font-medium text-brand-orange uppercase tracking-wider"
             >
-              Trusted marketplace since 2023
+              Trusted partner since 2023
             </motion.span>
 
             <motion.h1
@@ -41,7 +41,7 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.1 }}
               className="mt-5 text-4xl md:text-5xl lg:text-6xl font-bold text-brand-navy leading-[1.1] tracking-tight"
             >
-              Buying social media accounts,{" "}
+              Social media growth,{" "}
               <span className="text-brand-orange">made easy.</span>
             </motion.h1>
 
@@ -51,8 +51,7 @@ export default function HomePage() {
               transition={{ duration: 0.6, delay: 0.2 }}
               className="mt-6 text-muted-foreground text-base md:text-lg leading-relaxed max-w-3xl mx-auto"
             >
-              Browse a wide range of verified Instagram, Facebook, Twitter and
-              YouTube accounts. Every listing is authenticated for peace of mind.
+              Discover professional digital solutions and creative services for growing your social media presence. Expert strategies tailored for Instagram, TikTok, Facebook, YouTube, and more.
             </motion.p>
 
             <motion.div
@@ -125,7 +124,7 @@ export default function HomePage() {
               transition={{ duration: 0.6 }}
             >
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                <img src="/images/about-promo.jpg" alt="Sammy Store Logs" className="w-full h-auto object-cover" />
+                <img src="/images/about-promo.svg" alt="Kamzybot's Media" className="w-full h-auto object-cover" />
               </div>
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-brand-orange/15 rounded-full -z-10" />
               <div className="absolute -top-6 -left-6 w-24 h-24 bg-brand-navy/10 rounded-full -z-10" />
@@ -146,9 +145,9 @@ export default function HomePage() {
                 Unlock the power of an established social media presence.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Building a strong following from scratch takes years. Sammy Store
-                Logs gives you a secure, seamless way to acquire verified
-                accounts and skip straight to the growth.
+                Building a strong following from scratch takes years. Kamzybot's Media
+                gives you a secure, seamless way to acquire verified
+                accounts and accelerate your social growth.
               </p>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">
                 {features.map((feature) => (

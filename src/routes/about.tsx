@@ -40,7 +40,7 @@ export default function AboutPage() {
               className="relative"
             >
               <div className="relative rounded-3xl overflow-hidden shadow-2xl">
-                <img src="/images/about-promo.jpg" alt="Sammy Store" className="w-full h-auto object-cover" />
+                    <img src="/images/about-promo.svg" alt="Kamzybot's Media" className="w-full h-auto object-cover" />
               </div>
               <div className="absolute -bottom-6 -right-6 w-32 h-32 bg-brand-orange/15 rounded-full -z-10" />
               <div className="absolute -top-6 -left-6 w-24 h-24 bg-brand-navy/10 rounded-full -z-10" />
@@ -54,18 +54,13 @@ export default function AboutPage() {
               className="space-y-6"
             >
               <h2 className="text-2xl md:text-3xl lg:text-4xl font-bold text-brand-navy leading-tight tracking-tight">
-                Unlock the power of an established social media presence.
+                Unlock the power of professional digital solutions and social media growth.
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Social media is indispensable for individuals, businesses and
-                influencers alike. Building a strong following from scratch is
-                slow — Sammy Store Logs gives you a secure, seamless way to skip
-                ahead with verified accounts you can trust.
+                Social media is essential for individuals, businesses, and influencers alike. Growing your presence organically takes time — Kamzybot's Media provides expert creative services, strategic guidance, and proven solutions to accelerate your success.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                We provide a transparent marketplace across all major platforms,
-                with authentication, secure transfers and human support every
-                step of the way.
+                We offer comprehensive digital solutions across all major platforms, with transparency, authentic engagement strategies, and dedicated support at every step of your growth journey.
               </p>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2">

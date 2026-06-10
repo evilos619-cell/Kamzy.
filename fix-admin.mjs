@@ -5,7 +5,7 @@ const supabase = createClient(
   process.env.SUPABASE_SERVICE_ROLE_KEY
 );
 
-const email = "1sammystore1@gmail.com"; // 
+const email = "kamzybotsmedia@gmail.com"; // 
 
 const { data: user } = await supabase.auth.admin.getUserByEmail(email);
 console.log("User ID:", user?.user?.id);

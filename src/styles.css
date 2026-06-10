@@ -49,26 +49,26 @@
   --card-foreground: oklch(0.25 0.04 255);
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.25 0.04 255);
-  --primary: oklch(0.65 0.18 45);
+  --primary: oklch(0.58 0.15 260);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.35 0.06 255);
+  --secondary: oklch(0.35 0.08 240);
   --secondary-foreground: oklch(1 0 0);
   --muted: oklch(0.97 0.005 255);
   --muted-foreground: oklch(0.55 0.02 255);
-  --accent: oklch(0.97 0.005 255);
+  --accent: oklch(0.68 0.14 280);
   --accent-foreground: oklch(0.25 0.04 255);
   --destructive: oklch(0.6 0.22 25);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(0.92 0.01 255);
   --input: oklch(0.92 0.01 255);
-  --ring: oklch(0.65 0.18 45);
+  --ring: oklch(0.58 0.15 260);
 
-  /* Brand */
-  --brand-navy: oklch(0.32 0.05 255);
-  --brand-navy-light: oklch(0.42 0.05 255);
-  --brand-orange: oklch(0.68 0.17 45);
-  --brand-orange-hover: oklch(0.6 0.18 40);
-  --brand-cream: oklch(0.98 0.005 80);
+  /* Brand - Blue & Purple Theme */
+  --brand-navy: oklch(0.35 0.08 240);
+  --brand-navy-light: oklch(0.55 0.08 245);
+  --brand-orange: oklch(0.58 0.15 260);
+  --brand-orange-hover: oklch(0.50 0.16 250);
+  --brand-cream: oklch(0.98 0.005 285);
 }
 
 .dark {
@@ -78,19 +78,19 @@
   --card-foreground: oklch(0.98 0.005 255);
   --popover: oklch(0.22 0.03 255);
   --popover-foreground: oklch(0.98 0.005 255);
-  --primary: oklch(0.68 0.17 45);
+  --primary: oklch(0.65 0.14 265);
   --primary-foreground: oklch(1 0 0);
-  --secondary: oklch(0.3 0.04 255);
+  --secondary: oklch(0.30 0.06 240);
   --secondary-foreground: oklch(0.98 0.005 255);
   --muted: oklch(0.3 0.04 255);
   --muted-foreground: oklch(0.7 0.02 255);
-  --accent: oklch(0.3 0.04 255);
+  --accent: oklch(0.72 0.12 285);
   --accent-foreground: oklch(0.98 0.005 255);
   --destructive: oklch(0.65 0.2 25);
   --destructive-foreground: oklch(1 0 0);
   --border: oklch(1 0 0 / 10%);
   --input: oklch(1 0 0 / 15%);
-  --ring: oklch(0.68 0.17 45);
+  --ring: oklch(0.65 0.14 265);
 }
 
 @layer base {

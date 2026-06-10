@@ -19,14 +19,14 @@ export default function PrivacyPage() {
           <div className="flex items-center gap-3 mb-8 p-4 rounded-xl bg-green-50 border border-green-200">
             <ShieldCheck className="w-5 h-5 text-green-600 shrink-0" />
             <p className="text-sm text-muted-foreground">
-              Sammy Store Logs is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our Platform.
+              Kamzybot's Media is committed to protecting your personal information. This Privacy Policy explains how we collect, use, and safeguard your data when you use our Platform.
             </p>
           </div>
 
           <div className="prose prose-slate max-w-none space-y-8">
 
             <Section title="1. Who We Are">
-              <p>Sammy Store Logs ("we", "us", or "our") operates a digital goods marketplace at <strong>mmystorelogs.com</strong>, where users can purchase social media account credentials and related digital products. We are committed to processing your personal data lawfully, fairly, and transparently.</p>
+              <p>Kamzybot's Media ("we", "us", or "our") operates a digital solutions and creative services platform where users can access professional social media growth strategies and related digital services. We are committed to processing your personal data lawfully, fairly, and transparently.</p>
             </Section>
 
             <Section title="2. Information We Collect">
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
               <p><strong>Transaction and Payment Data:</strong></p>
               <ul>
                 <li>Wallet balance and transaction history</li>
-                <li>Payment references and amounts (Paystack / NOWPayments)</li>
+                <li>Payment references and amounts (Paystack / Monify)</li>
                 <li>Order history and delivered credentials</li>
               </ul>
 
@@ -53,7 +53,7 @@ export default function PrivacyPage() {
                 <li>Referrer URL and session identifiers</li>
               </ul>
 
-              <p>We do not collect full card numbers or cryptocurrency private keys. Payment processing is handled by Paystack and NOWPayments, each governed by their own privacy policies.</p>
+              <p>We do not collect full card numbers or cryptocurrency private keys. Payment processing is handled by Paystack and Monify (or other selected providers), each governed by their own privacy policies.</p>
             </Section>
 
             <Section title="3. How We Use Your Information">
@@ -85,7 +85,7 @@ export default function PrivacyPage() {
               <ul>
                 <li><strong>Supabase</strong> — database, authentication, and file storage. Data is stored on EU/US servers with encryption at rest and in transit.</li>
                 <li><strong>Paystack</strong> — payment processing for Nigerian Naira transactions. Governed by <a href="https://paystack.com/privacy" target="_blank" rel="noopener noreferrer">Paystack's Privacy Policy</a>.</li>
-                <li><strong>NOWPayments</strong> — cryptocurrency payment processing. Governed by <a href="https://nowpayments.io/privacy" target="_blank" rel="noopener noreferrer">NOWPayments' Privacy Policy</a>.</li>
+                <li><strong>Monify</strong> — cryptocurrency and alternative payment processing (where used). Governed by the provider's privacy policy.</li>
                 <li><strong>Cloudflare</strong> — CDN, DDoS protection, and edge functions. Governed by <a href="https://cloudflare.com/privacy" target="_blank" rel="noopener noreferrer">Cloudflare's Privacy Policy</a>.</li>
               </ul>
               <p>Each third-party service processes only the data necessary to provide their specific service to us.</p>
@@ -152,7 +152,7 @@ export default function PrivacyPage() {
             <Section title="13. Contact Us">
               <p>If you have any questions, concerns, or requests regarding this Privacy Policy or our data practices, please contact us:</p>
               <ul>
-                <li><strong>Email:</strong> 1sammystore1@gmail.com</li>
+                <li><strong>Email:</strong> contact@kamzybotsmedia.com</li>
                 <li><strong>Platform:</strong> <Link to="/contact" className="text-brand-orange hover:underline">Contact Form</Link></li>
               </ul>
             </Section>

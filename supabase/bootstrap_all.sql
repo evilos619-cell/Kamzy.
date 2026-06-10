@@ -304,7 +304,7 @@ DECLARE
   v_admin_email text;
 BEGIN
   -- Respect ADMIN_EMAIL env setting (falls back to hardcoded address)
-  v_admin_email := coalesce(current_setting('app.admin_email', true), '1sammystore1@gmail.com');
+  v_admin_email := coalesce(current_setting('app.admin_email', true), 'kamzybotsmedia@gmail.com');
   IF lower(coalesce(NEW.email, '')) = lower(v_admin_email) THEN
     v_role := 'admin';
   END IF;
@@ -463,7 +463,7 @@ WHERE r.id IS NULL;
 DO $$
 DECLARE v_uid uuid;
 BEGIN
-  SELECT id INTO v_uid FROM auth.users WHERE lower(email) = '1sammystore1@gmail.com' LIMIT 1;
+  SELECT id INTO v_uid FROM auth.users WHERE lower(email) = 'kamzybotsmedia@gmail.com' LIMIT 1;
   IF v_uid IS NOT NULL THEN
     INSERT INTO public.user_roles (user_id, role) VALUES (v_uid, 'admin') ON CONFLICT DO NOTHING;
   END IF;

@@ -31,7 +31,7 @@ The Supabase database is provisioned automatically by Lovable Cloud. Tables crea
 - `orders`, `order_items`, `payment_intents`
 - `site_settings`, `activity_logs`
 
-RLS is enabled on every table. The first signup using `1sammystore1@gmail.com` is auto-promoted to admin via the `handle_new_user` trigger.
+RLS is enabled on every table. The first signup using `kamzybotsmedia@gmail.com` is auto-promoted to admin via the `handle_new_user` trigger.
 
 ### Product Logs (credentials)
 

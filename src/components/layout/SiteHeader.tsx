@@ -43,8 +43,8 @@ export function SiteHeader() {
           <div className="flex items-center justify-between h-[68px] gap-4">
             <Link to="/" className="flex items-center gap-2 shrink-0">
               <img
-                src="/images/logo.png"
-                alt="Sammy Store"
+                src="/images/logo.svg"
+                alt="Kamzybot's Media"
                 className="h-10 w-auto object-contain"
               />
             </Link>

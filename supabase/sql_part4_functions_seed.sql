@@ -9,7 +9,7 @@ RETURNS trigger LANGUAGE plpgsql SECURITY DEFINER SET search_path = public AS $$
 DECLARE
   v_role app_role := 'user';
 BEGIN
-  IF lower(coalesce(NEW.email,'')) = '1sammystore1@gmail.com' THEN
+  IF lower(coalesce(NEW.email,'')) = 'kamzybotsmedia@gmail.com' THEN
     v_role := 'admin';
   END IF;
   INSERT INTO public.profiles (id, email, display_name)
@@ -135,7 +135,7 @@ INSERT INTO public.user_roles (user_id, role)
 DO $$
 DECLARE v_uid uuid;
 BEGIN
-  SELECT id INTO v_uid FROM auth.users WHERE lower(email) = '1sammystore1@gmail.com' LIMIT 1;
+  SELECT id INTO v_uid FROM auth.users WHERE lower(email) = 'kamzybotsmedia@gmail.com' LIMIT 1;
   IF v_uid IS NOT NULL THEN
     INSERT INTO public.user_roles (user_id, role) VALUES (v_uid, 'admin') ON CONFLICT DO NOTHING;
   END IF;

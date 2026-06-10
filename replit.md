@@ -26,4 +26,4 @@ The Supabase public keys (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY) are already
 ## User Preferences
 
 - Keep Supabase as the auth/database provider (do not replace with Replit Auth)
-- Admin email: 1sammystore1@gmail.com
+- Admin email: kamzybotsmedia@gmail.com

@@ -36,7 +36,7 @@ export const testimonials: Testimonial[] = [
     name: "John D.",
     role: "Social Media Manager",
     content:
-      "Sammy Store Logs made it incredibly easy for us to enhance our social media presence. The account we purchased had an engaged following, which boosted our brand's credibility almost instantly. Smooth, secure, and well supported.",
+      "Kamzybot's Media made it incredibly easy for us to enhance our social media presence. Their digital solutions and creative services truly transformed our brand visibility. Professional, reliable, and always available to support us.",
     avatar: "/images/avatar-1.jpg",
   },
   {
@@ -44,7 +44,7 @@ export const testimonials: Testimonial[] = [
     name: "Emily S.",
     role: "Entrepreneur",
     content:
-      "As a startup, building a social media following from scratch was daunting. Sammy Store provided a perfect solution. The account we acquired was exactly as described, with a real, active follower base.",
+      "As a startup, managing social media growth was overwhelming. Kamzybot's Media provided exactly what we needed. Their services are tailored, transparent, and deliver real results with authentic engagement.",
     avatar: "/images/avatar-2.jpg",
   },
   {
@@ -52,7 +52,7 @@ export const testimonials: Testimonial[] = [
     name: "Alex R.",
     role: "Influencer",
     content:
-      "I needed to expand my reach on a new platform, and Sammy Store was the perfect choice. The account I bought was well-maintained and came with authentic followers. Seamless transfer.",
+      "I needed expert digital solutions for my social media strategy, and Kamzybot's Media exceeded expectations. Their creative services and growth strategies are top-notch. Highly recommended for serious content creators.",
     avatar: "/images/avatar-3.jpg",
   },
 ];
@@ -79,14 +79,14 @@ export const blogs: Blog[] = [
 ];
 
 export const contactInfo = {
-  email: "1sammystore1@gmail.com",
-  phone: "+234 816 313 7129",
-  phoneRaw: "+2348163137129",
-  whatsappSupport: "https://wa.me/2348163137129",
-  whatsappGroup: "https://chat.whatsapp.com/Hm10Cb6VIVUDqGTQQNFOd0",
-  telegramSupport: "https://t.me/Sammy_store_logs",
-  telegramChannel: "https://t.me/sammystorelogss",
+  email: "contact@kamzybotsmedia.com",
+  phone: "+234 815 969 6814",
+  phoneRaw: "+2348159696814",
+  whatsappSupport: "https://wa.me/2348159696814",
+  whatsappGroup: "https://chat.whatsapp.com/EvXxgtIsxPiDsEGFQcMP9v",
+  telegramSupport: "https://t.me/Kamzybotsmedia",
+  telegramChannel: "https://t.me/kamzybotsmedia01",
   location: "Nigeria",
 };
 
-export const ADMIN_OWNER_EMAIL = "1sammystore1@gmail.com";
+export const ADMIN_OWNER_EMAIL = "contact@kamzybotsmedia.com";

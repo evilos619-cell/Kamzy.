@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1">
+      <stop offset="0%" stop-color="#2563eb" />
+      <stop offset="100%" stop-color="#7c3aed" />
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <g transform="translate(60,60)">
+    <text x="0" y="120" font-family="Plus Jakarta Sans, Inter, Arial" font-size="72" font-weight="800" fill="#fff">KAMZYBOT'S MEDIA</text>
+    <text x="0" y="200" font-family="Inter, Arial" font-size="32" fill="#e6eef8">Digital Solutions • Creative Services • Social Media Growth</text>
+    <rect x="0" y="260" width="560" height="6" rx="3" fill="#ffffff" opacity="0.12" />
+  </g>
+</svg>

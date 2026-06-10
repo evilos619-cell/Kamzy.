@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="400" height="120" viewBox="0 0 400 120">
+  <defs>
+    <linearGradient id="g" x1="0" x2="1">
+      <stop offset="0%" stop-color="#2563eb"/>
+      <stop offset="100%" stop-color="#7c3aed"/>
+    </linearGradient>
+  </defs>
+  <rect width="400" height="120" rx="18" fill="url(#g)" />
+  <g transform="translate(18,18)">
+    <rect width="84" height="84" rx="14" fill="#fff" opacity="0.06" />
+    <g transform="translate(12,12)">
+      <circle cx="30" cy="30" r="20" fill="#fff" opacity="0.12" />
+      <path d="M10 30 C20 10, 40 10, 50 30 C40 50, 20 50, 10 30 Z" fill="#fff" opacity="0.14" />
+    </g>
+    <text x="120" y="56" font-family="Plus Jakarta Sans, Inter, Arial" font-size="28" font-weight="700" fill="#fff">KAMZYBOT'S</text>
+    <text x="120" y="90" font-family="Inter, Arial" font-size="20" font-weight="600" fill="#e6eef8">MEDIA</text>
+  </g>
+</svg>

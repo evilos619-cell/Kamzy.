@@ -1,36 +1,39 @@
 // Cloudflare Pages Function — POST /api/webhooks/nowpayments
-// NOWPayments IPN (Instant Payment Notification) handler
-// Auto-credits the wallet when a crypto payment completes — no "Check Status" needed.
-//
+// NOWPayments / Monify IPN (Instant Payment Notification) handler
+// Auto-credits the wallet when a crypto payment completes — no "Check Status" needed
+// This handler will detect MONIFY_IPN_SECRET or NOWPAYMENTS_IPN_SECRET if present.
 // Required env vars in Cloudflare Pages dashboard:
-//   NOWPAYMENTS_IPN_SECRET  — from NOWPayments dashboard → Settings → IPN → Secret
+//   NOWPAYMENTS_IPN_SECRET or MONIFY_IPN_SECRET
 //   VITE_SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY
 //
-// Webhook URL to set in NOWPayments dashboard:
-//   https://sammystorelogs.com/api/webhooks/nowpayments
+// Webhook URL to set in payment provider dashboard (example):
+//   https://kamzybotsmedia.com/api/webhooks/nowpayments
 
 export async function onRequestPost({ request, env }) {
   const supabaseUrl = env.VITE_SUPABASE_URL || env.SUPABASE_URL || "";
-  const serviceKey  = env.SUPABASE_SERVICE_ROLE_KEY || "";
-  const ipnSecret   = env.NOWPAYMENTS_IPN_SECRET || "";
+  const serviceKey = env.SUPABASE_SERVICE_ROLE_KEY || "";
+  const monifySecret = env.MONIFY_IPN_SECRET || "";
+  const nowSecret = env.NOWPAYMENTS_IPN_SECRET || "";
+  const ipnSecret = monifySecret || nowSecret || "";
+  const provider = monifySecret ? "monify" : nowSecret ? "nowpayments" : "";
 
   if (!supabaseUrl || !serviceKey)
     return json({ error: "Server not configured" }, 503);
 
   // Read raw body first — needed for signature verification
   const body = await request.text();
-  const signature = request.headers.get("x-nowpayments-sig") || "";
+  const signature = request.headers.get(provider === "monify" ? "x-monify-sig" : "x-nowpayments-sig") || "";
 
-  // Verify HMAC-SHA512 signature (NOWPayments signs the deep-sorted JSON)
+  // Verify signature (uses NOWPayments-style HMAC verification function).
   if (ipnSecret) {
     const valid = await verifyNowSignature(body, signature, ipnSecret);
     if (!valid) {
-      console.error("[NOWPayments webhook] Invalid signature — rejecting");
+      console.error(`[${provider || "payment provider"} webhook] Invalid signature — rejecting`);
       return json({ error: "Invalid signature" }, 401);
     }
   } else {
-    // IPN secret not yet configured — warn but proceed (still idempotent via reference check)
-    console.warn("[NOWPayments webhook] NOWPAYMENTS_IPN_SECRET not set — skipping signature check");
+    // IPN secret not configured — warn but proceed (idempotent checks will protect duplicates)
+    console.warn(`[${provider || "payment provider"} webhook] IPN secret not set — skipping signature check`);
   }
 
   let event;
@@ -47,8 +50,11 @@ export async function onRequestPost({ request, env }) {
   if (!reference) return json({ error: "Missing order_id" }, 400);
 
   // Idempotency — look up payment_intent by reference
-  const intentRes = await sbFetch(supabaseUrl, serviceKey,
-    `/rest/v1/payment_intents?reference=eq.${encodeURIComponent(reference)}&provider=eq.nowpayments&limit=1`);
+  const intentRes = await sbFetch(
+    supabaseUrl,
+    serviceKey,
+    `/rest/v1/payment_intents?reference=eq.${encodeURIComponent(reference)}&provider=eq.${provider}&limit=1`
+  );
   const intents = await intentRes.json();
   const intent  = intents[0];
 
@@ -59,8 +65,8 @@ export async function onRequestPost({ request, env }) {
   // Determine user — from payment_intent record or metadata
   const userId = intent?.user_id ?? event.order_description_metadata?.userId ?? null;
   if (!userId) {
-    console.error("[NOWPayments webhook] Cannot resolve userId for reference:", reference);
-    return json({ received: true }); // 200 so NOWPayments doesn't retry
+    console.error(`[${provider || "payment provider"} webhook] Cannot resolve userId for reference:`, reference);
+    return json({ received: true }); // 200 so provider doesn't retry
   }
 
   const amount = Number(price_amount ?? actually_paid ?? 0);
@@ -74,11 +80,11 @@ export async function onRequestPost({ request, env }) {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({
-      _user_id:    userId,
-      _amount:     amount,
-      _provider:   "nowpayments",
-      _reference:  reference,
-      _description: "Wallet funded via NOWPayments (crypto)",
+      _user_id: userId,
+      _amount: amount,
+      _provider: provider || "nowpayments",
+      _reference: reference,
+      _description: `Wallet funded via ${provider || "NOWPayments"} (crypto)`,
     }),
   });
 
@@ -90,8 +96,7 @@ export async function onRequestPost({ request, env }) {
 
   // Mark payment_intent as success
   if (intent) {
-    await sbFetch(supabaseUrl, serviceKey,
-      `/rest/v1/payment_intents?id=eq.${intent.id}`, {
+    await sbFetch(supabaseUrl, serviceKey, `/rest/v1/payment_intents?id=eq.${intent.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
       body: JSON.stringify({ status: "success", updated_at: new Date().toISOString() }),
@@ -102,14 +107,18 @@ export async function onRequestPost({ request, env }) {
       method: "POST",
       headers: { "Content-Type": "application/json", Prefer: "return=minimal" },
       body: JSON.stringify({
-        user_id: userId, provider: "nowpayments",
-        reference, amount, currency: "NGN",
-        status: "success", raw: event,
+        user_id: userId,
+        provider: provider || "nowpayments",
+        reference,
+        amount,
+        currency: "NGN",
+        status: "success",
+        raw: event,
       }),
     });
   }
 
-  console.log(`[NOWPayments webhook] Credited ₦${amount} → user ${userId} (ref: ${reference})`);
+  console.log(`[${provider || "NOWPayments"} webhook] Credited ₦${amount} → user ${userId} (ref: ${reference})`);
   return json({ received: true, credited: true });
 }
 

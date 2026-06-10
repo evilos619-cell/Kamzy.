@@ -383,8 +383,8 @@ function SupportTab() {
   const links = [
     { icon: MessageCircle, label: "WhatsApp Support", href: contactInfo.whatsappSupport, color: "text-green-600", bg: "bg-green-50", desc: contactInfo.phone },
     { icon: Users, label: "WhatsApp Community", href: contactInfo.whatsappGroup, color: "text-green-600", bg: "bg-green-50", desc: "Join our community group" },
-    { icon: Send, label: "Telegram Support", href: contactInfo.telegramSupport, color: "text-sky-500", bg: "bg-sky-50", desc: "@Sammy_store_logs" },
-    { icon: Send, label: "Telegram Channel", href: contactInfo.telegramChannel, color: "text-sky-500", bg: "bg-sky-50", desc: "@sammystorelogss" },
+    { icon: Send, label: "Telegram Support", href: contactInfo.telegramSupport, color: "text-sky-500", bg: "bg-sky-50", desc: "@Kamzybotsmedia" },
+    { icon: Send, label: "Telegram Channel", href: contactInfo.telegramChannel, color: "text-sky-500", bg: "bg-sky-50", desc: "@kamzybotsmedia01" },
   ];
   return (
     <div className="max-w-2xl">

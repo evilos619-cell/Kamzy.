@@ -198,7 +198,7 @@ returns trigger language plpgsql security definer set search_path = public as $$
 declare
   v_role app_role := 'user';
 begin
-  if lower(coalesce(new.email,'')) = '1sammystore1@gmail.com' then
+  if lower(coalesce(new.email,'')) = 'kamzybotsmedia@gmail.com' then
     v_role := 'admin';
   end if;
 
