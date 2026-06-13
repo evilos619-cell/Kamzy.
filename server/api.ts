@@ -398,20 +398,23 @@ app.post("/api/admin/manual-deposits/verify", async (req, res) => {
       return err(res, 400, `cannot verify intent in status: ${intent.status}`);
     }
 
-    // Lock or create wallet row and update balance
+    // Lock or create wallet row and update balance (ensure we have wallet.id)
     const walletRes = await client.query(
-      `SELECT user_id, balance FROM wallets WHERE user_id = $1 FOR UPDATE`,
+      `SELECT id, user_id, balance FROM wallets WHERE user_id = $1 FOR UPDATE`,
       [intent.user_id]
     );
 
     let newBalance: number;
+    let walletId: string | null = null;
     if (walletRes.rowCount === 0) {
-      await client.query(
-        `INSERT INTO wallets (user_id, balance) VALUES ($1, $2)`,
+      const ins = await client.query(
+        `INSERT INTO wallets (user_id, balance) VALUES ($1, $2) RETURNING id`,
         [intent.user_id, intent.amount]
       );
+      walletId = ins.rows[0].id;
       newBalance = Number(intent.amount);
     } else {
+      walletId = walletRes.rows[0].id;
       const current = Number(walletRes.rows[0].balance ?? 0);
       newBalance = current + Number(intent.amount);
       await client.query(
@@ -420,11 +423,11 @@ app.post("/api/admin/manual-deposits/verify", async (req, res) => {
       );
     }
 
-    // Insert a wallet_transactions/audit row
+    // Insert a wallet_transactions/audit row with required columns
     await client.query(
-      `INSERT INTO wallet_transactions (user_id, amount, type, reference, created_at)
-       VALUES ($1, $2, $3, $4, now())`,
-      [intent.user_id, intent.amount, "manual_topup", intent.reference]
+      `INSERT INTO wallet_transactions (wallet_id, user_id, type, amount, balance_after, status, provider, reference, created_at)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, now())`,
+      [walletId, intent.user_id, 'credit', intent.amount, newBalance, 'success', intent.provider ?? 'manual', intent.reference]
     );
 
     // Update payment_intents status -> completed and set audit fields

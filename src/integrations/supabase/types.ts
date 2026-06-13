@@ -454,11 +454,11 @@ export type Database = {
       }
       credit_wallet: {
         Args: {
+          _user_id: string
           _amount: number
-          _description?: string
           _provider: Database["public"]["Enums"]["payment_provider"]
           _reference: string
-          _user_id: string
+          _description?: string
         }
         Returns: string
       }
@@ -470,7 +470,7 @@ export type Database = {
         Returns: boolean
       }
       purchase_with_wallet: {
-        Args: { _product_id: string; _quantity: number; _user_id: string }
+        Args: { _user_id: string; _product_id: string; _quantity: number }
         Returns: string
       }
     }
